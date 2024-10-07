@@ -1,5 +1,6 @@
 import click
 import markdown2
+import weasyprint
 from typing import List
 from pathlib import Path
 
@@ -42,6 +43,8 @@ def read_md_file(md_file: Path) -> str:
 def convert_md_to_html(md_content: str) -> str:
     return markdown2.markdown(md_content)
 
+def write_html_to_pdf(html_content:str, output:Path)->None:
+    weasyprint.HTML(string=html_content).write_pdf(output)
 
 @click.command()
 @click.argument("markdown_file", type=str, callback=validate_md_file)
@@ -50,9 +53,7 @@ def convert_md_to_html(md_content: str) -> str:
 def pdfgen(markdown_file: str, output: str, template: str) -> None:
     md_content = read_md_file(Path(markdown_file))
     html_content = convert_md_to_html(md_content)
-    # print(html_content)
-    absolute_path = Path(__file__).resolve()
-    print(absolute_path)
+    write_html_to_pdf(html_content, Path(output))
 
 
 if __name__ == "__main__":
