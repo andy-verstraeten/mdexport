@@ -2,6 +2,7 @@ import click
 import markdown2
 import weasyprint
 import jinja2
+import frontmatter
 from uuid import uuid4
 from typing import List
 from pathlib import Path
@@ -46,15 +47,16 @@ def generate_template_help():
     template_options = get_available_templates()
     return f"Provide one of the following templates: {",".join(template_options)}"
 
-def fill_template(template:str, html_content: str)->str:
+def fill_template(template:str, html_content: str, metadata: dict={})->str:
     current_template = get_templates_directory() / template / "template.html"
     template_html = jinja2.Template(current_template.read_text())
-    return template_html.render(body=html_content)
+    return template_html.render(body=html_content,**metadata)
 
-
+def extract_md_metadata(md_file:Path)->dict:
+    return frontmatter.load(md_file).metadata
 
 def read_md_file(md_file: Path) -> str:
-    return md_file.read_text()
+    return frontmatter.load(md_file).content
 
 
 def convert_md_to_html(md_content: str) -> str:
@@ -68,6 +70,14 @@ def write_html_to_pdf(html_content:str, output:Path)->None:
      
         
 def write_template_to_pdf(template: str, filled_template: str, output:Path)->None:
+    """Writes the filled out html template to a uuid named html file in the template folder
+    and renders it to the output path as a pdf. 
+
+    Args:
+        template (str): _description_
+        filled_template (str): _description_
+        output (Path): _description_
+    """
     render_file = f".{uuid4()}.html"
     render_full_path = get_templates_directory() / template / render_file
     render_full_path.write_text(filled_template)
@@ -85,8 +95,8 @@ def pdfgen(markdown_file: str, output: str, template: str) -> None:
     if not template:
         write_html_to_pdf(html_content, Path(output))
     else:
-        filled_template = fill_template(template, html_content)
-        print(filled_template)
+        metadata = extract_md_metadata(Path(markdown_file))
+        filled_template = fill_template(template, html_content,metadata)
         write_template_to_pdf(template, filled_template, Path(output))
 if __name__ == "__main__":
     pdfgen()
