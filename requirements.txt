@@ -1,3 +1,4 @@
 click
 markdown2
 weasyprint
+jinja2
