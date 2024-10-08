@@ -8,7 +8,11 @@ from cli import (
     validate_template,
 )
 from markdown import read_md_file, convert_md_to_html, extract_md_metadata
-from templates import fill_template
+from templates import (
+    fill_template,
+    match_metadata_to_template,
+    ExpectedMoreMetaDataException,
+)
 from exporter import write_html_to_pdf, write_template_to_pdf
 
 
@@ -29,6 +33,10 @@ def pdfgen(markdown_file: str, output: str, template: str) -> None:
         write_html_to_pdf(html_content, Path(output))
     else:
         metadata = extract_md_metadata(Path(markdown_file))
+        try:
+            match_metadata_to_template(template, metadata.keys())
+        except ExpectedMoreMetaDataException as e:
+            print(f"!!!!! WARNING: {e}")
         filled_template = fill_template(template, html_content, metadata)
         write_template_to_pdf(template, filled_template, Path(output))
 
