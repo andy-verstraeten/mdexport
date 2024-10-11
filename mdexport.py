@@ -27,8 +27,9 @@ from exporter import write_html_to_pdf, write_template_to_pdf
     callback=validate_template,
 )
 def pdfgen(markdown_file: str, output: str, template: str) -> None:
-    md_content = read_md_file(Path(markdown_file))
-    html_content = convert_md_to_html(md_content)
+    md_path = Path(markdown_file)
+    md_content = read_md_file(md_path)
+    html_content = convert_md_to_html(md_content, md_path)
     if not template:
         write_html_to_pdf(html_content, Path(output))
     else:
