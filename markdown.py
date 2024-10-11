@@ -17,7 +17,8 @@ def read_md_file(md_file: Path) -> str:
 def convert_md_to_html(md_content: str, md_path: Path) -> str:
     attachment_path = get_base_path(md_path)
     md_content = embed_to_img_tag(md_content, attachment_path)
-    return markdown2.markdown(md_content)
+    html_text = markdown2.markdown(md_content, extras=["tables"])
+    return html_text
 
 
 def get_base_path(md_path: Path) -> Path:
