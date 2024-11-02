@@ -3,3 +3,5 @@ markdown2
 weasyprint
 jinja2
 python-frontmatter
+pytest
+pytest-cov

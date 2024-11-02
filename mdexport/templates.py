@@ -43,15 +43,16 @@ def fill_template(template: str, html_content: str, metadata: dict = {}) -> str:
     return template_html.render(body=html_content, **metadata)
 
 
-def match_metadata_to_template(template: str, metadata_keys):
+def match_metadata_to_template(template: str, metadata_keys: List[str]):
     template_html = read_template(template)
     template_variables = extract_variables(template_html)
     not_included_metadata = list(
         set(template_variables) - set(metadata_keys) - {BODY_VAR}
     )
     if len(not_included_metadata) > 0:
+        not_included_comma = ",".join(not_included_metadata)
         raise ExpectedMoreMetaDataException(
-            f"The used template expects the following variable values to be passed as frontmatter metadata: {",".join(not_included_metadata)} "
+            f"The used template expects the following variable values to be passed as frontmatter metadata: {not_included_comma} "
         )
 
 
