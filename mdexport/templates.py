@@ -14,13 +14,13 @@ class ExpectedMoreMetaDataException(Exception):
 BODY_VAR = "body"
 
 
-def get_templates_directory() -> Path:
+def get_templates_directory(current_path: Path = __file__) -> Path:
     """Get the path to the "templates" directory of this repo
 
     Returns:
         Path: Path to the directory holding the templates
     """
-    return Path(__file__).resolve().parent.parent / "templates"
+    return Path(current_path).resolve().parent.parent / "templates"
 
 
 def get_available_templates() -> List[str]:
@@ -39,11 +39,13 @@ def read_template(template: str) -> str:
 
 
 def fill_template(template: str, html_content: str, metadata: dict = {}) -> str:
+    # TODO: decouple read_template
     template_html = jinja2.Template(read_template(template))
     return template_html.render(body=html_content, **metadata)
 
 
 def match_metadata_to_template(template: str, metadata_keys: List[str]):
+    # TODO: rename function to something more describing the action
     template_html = read_template(template)
     template_variables = extract_variables(template_html)
     not_included_metadata = list(
