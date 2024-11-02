@@ -7,6 +7,7 @@ ATTACHMENT_DIRECTORY = "attachments"
 
 
 def extract_md_metadata(md_file: Path) -> dict:
+    # TODO: figure out all md works as values
     metadata = frontmatter.load(md_file).metadata
     convert_metadata_to_html = lambda metadata: markdown2.markdown(
         metadata, extras=["tables"]
