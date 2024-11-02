@@ -71,32 +71,3 @@ def extract_variables(template_string: str) -> Set[str]:
     parsed_content = env.parse(template_string)
     variables = meta.find_undeclared_variables(parsed_content)
     return set(variables)
-
-
-# Sample text with placeholder image references
-text = """
-This is an example of an embedded image ![[Screenshot 2024-10-03 at 19.35.42.png]] 
-and another one ![[image.jpeg]] that needs to be replaced.
-"""
-
-# Array of image extensions
-image_extensions = [
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".gif",
-    ".bmp",
-    ".tiff",
-    ".tif",
-    ".webp",
-    ".svg",
-    ".ico",
-    ".heif",
-    ".heic",
-    ".raw",
-    ".psd",
-    ".ai",
-    ".eps",
-    ".indd",
-    ".jfif",
-]
