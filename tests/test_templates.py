@@ -9,4 +9,4 @@ def test_extract_variables():
     </body>
     </html>
 """
-    assert set(extract_variables(DUMMY_HTML_TEMPLATE)) == {"var1", "body"}
+    assert extract_variables(DUMMY_HTML_TEMPLATE) == {"var1", "body"}

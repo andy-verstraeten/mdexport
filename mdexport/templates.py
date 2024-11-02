@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Set
 
 from jinja2 import meta
 import jinja2
@@ -56,7 +56,7 @@ def match_metadata_to_template(template: str, metadata_keys: List[str]):
         )
 
 
-def extract_variables(template_string: str) -> List[str]:
+def extract_variables(template_string: str) -> Set[str]:
     """Extract all variables used in a jinja2 template
 
     Args:
@@ -68,7 +68,7 @@ def extract_variables(template_string: str) -> List[str]:
     env = jinja2.Environment()
     parsed_content = env.parse(template_string)
     variables = meta.find_undeclared_variables(parsed_content)
-    return list(variables)
+    return set(variables)
 
 
 # Sample text with placeholder image references
