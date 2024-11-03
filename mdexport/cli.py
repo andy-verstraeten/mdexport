@@ -1,6 +1,7 @@
 import click
 from pathlib import Path
-from templates import get_available_templates
+from .templates import get_available_templates
+
 
 def validate_output_file(ctx: click.Context, param: click.Option, value: str) -> str:
     if ".pdf" not in value:
@@ -22,6 +23,7 @@ def validate_template(ctx: click.Context, param: click.Option, value: str) -> st
             f"Please provide a valid template. \n{generate_template_help()}"
         )
     return value
+
 
 def generate_template_help():
     template_options = get_available_templates()

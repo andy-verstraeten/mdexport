@@ -2,7 +2,7 @@ import mdexport.mdexport
 from pytest import MonkeyPatch, raises
 from pathlib import Path
 
-from ..mdexport.templates import (
+from mdexport.templates import (
     extract_variables,
     get_templates_directory,
     get_available_templates,
@@ -28,9 +28,7 @@ def test_get_available_templates(monkeypatch: MonkeyPatch, tmp_path: Path):
     template2 = tmp_path / "template2"
     template2.mkdir()
     (tmp_path / "not_a_template.txt").touch()
-    monkeypatch.setattr(
-        mdexport.mdexport.templates, "get_templates_directory", lambda: tmp_path
-    )
+    monkeypatch.setattr(mdexport.templates, "get_templates_directory", lambda: tmp_path)
     assert {*get_available_templates()} == {"template1", "template2"}
 
 
@@ -38,9 +36,7 @@ def test_read_template(monkeypatch: MonkeyPatch, tmp_path: Path):
     MOCK_TEMPLATE = "mock_template"
     (tmp_path / MOCK_TEMPLATE).mkdir()
     (tmp_path / MOCK_TEMPLATE / "template.html").write_text("<html></html>")
-    monkeypatch.setattr(
-        mdexport.mdexport.templates, "get_templates_directory", lambda: tmp_path
-    )
+    monkeypatch.setattr(mdexport.templates, "get_templates_directory", lambda: tmp_path)
     assert read_template(MOCK_TEMPLATE) == "<html></html>"
 
 
@@ -58,7 +54,7 @@ def test_extract_variables():
 def test_fill_template(monkeypatch: MonkeyPatch):
     metadata = {"metadata1": "mock_metadata"}
     monkeypatch.setattr(
-        mdexport.mdexport.templates,
+        mdexport.templates,
         "read_template",
         lambda _: "<html><header>{{metadata1}}</header><body>{{body}}</body></html>",
     )
@@ -71,12 +67,12 @@ def test_fill_template(monkeypatch: MonkeyPatch):
 
 def test_match_metadata_to_template(monkeypatch: MonkeyPatch):
     monkeypatch.setattr(
-        mdexport.mdexport.templates,
+        mdexport.templates,
         "read_template",
         lambda _: "",
     )
     monkeypatch.setattr(
-        mdexport.mdexport.templates,
+        mdexport.templates,
         "extract_variables",
         lambda _: ["metadata1", "metadata2", BODY_VAR],
     )

@@ -1,5 +1,5 @@
 from pathlib import Path
-from ..mdexport.markdown import (
+from mdexport.markdown import (
     extract_md_metadata,
     read_md_file,
     convert_md_to_html,

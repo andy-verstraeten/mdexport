@@ -1,7 +1,7 @@
 import weasyprint
 from uuid import uuid4
 from pathlib import Path
-from templates import get_templates_directory
+from mdexport.templates import get_templates_directory
 import re
 
 BASE_STYLE_HTML = """
@@ -42,7 +42,7 @@ def insert_base_style(html_text: str) -> str:
         )
     elif "<html>" in html_text.lower():
         html_text = re.sub(
-            "<html>", f"</html>\n{BASE_STYLE_HTML}\n", html_text, flags=re.IGNORECASE
+            "<html>", f"<html>\n{BASE_STYLE_HTML}\n", html_text, flags=re.IGNORECASE
         )
     else:
         html_text = f"""<html>
