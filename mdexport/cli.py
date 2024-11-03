@@ -28,3 +28,20 @@ def validate_template(ctx: click.Context, param: click.Option, value: str) -> st
 def generate_template_help():
     template_options = get_available_templates()
     return f"Provide one of the following templates: {",".join(template_options)}"
+
+
+def validate_template_dir(
+    ctx: click.Context, param: click.Parameter, template_dir: str
+):
+    template_path = Path(template_dir)
+    if not template_path.exists():
+        raise click.BadParameter(
+            "Folder does not exist. Please provide an existing folder."
+        )
+
+    if not template_path.is_dir():
+        raise click.BadParameter(
+            "The provided path is not a folder. Please provide the path to a folder."
+        )
+
+    return Path(template_dir)
