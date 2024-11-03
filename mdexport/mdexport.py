@@ -15,6 +15,7 @@ from .templates import (
     ExpectedMoreMetaDataException,
 )
 from .exporter import write_html_to_pdf, write_template_to_pdf
+import mdexport.config as config
 
 
 @click.group()
@@ -52,9 +53,12 @@ def publish(markdown_file: str, output: str, template: str) -> None:
 @click.argument("template_dir", type=str, callback=validate_template_dir)
 def set_template_dir(template_dir: Path):
     settings = config.load()
+    settings["template_dir"] = str(template_dir)
+    config.save(settings)
 
 
 cli.add_command(publish)
 cli.add_command(set_template_dir, "settemplatedir")
 if __name__ == "__main__":
+    config.preflight_checks()
     cli()
