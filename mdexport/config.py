@@ -38,12 +38,18 @@ def save(config: dict) -> None:
         json.dump(config, config_file)
 
 
+def set_template_dir(template_dir: Path):
+    settings = load()
+    settings[ConfigStructure.TEMPLATE_DIR.value] = str(template_dir)
+    save(settings)
+
+
 def preflight_checks():
     if not (_get_config_directory() / CONFIG_FILENAME).is_file():
         (_get_config_directory() / CONFIG_FILENAME).write_text("{}")
 
     settings = load()
-    if ConfigStructure.TEMPLATE_DIR not in settings.keys():
+    if ConfigStructure.TEMPLATE_DIR.value not in settings.keys():
         click.echo(
             f"""ERROR: Template directory not set.
 Please run:

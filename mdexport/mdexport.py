@@ -52,9 +52,7 @@ def publish(markdown_file: str, output: str, template: str) -> None:
 @click.command()
 @click.argument("template_dir", type=str, callback=validate_template_dir)
 def set_template_dir(template_dir: Path):
-    settings = config.load()
-    settings["template_dir"] = str(template_dir)
-    config.save(settings)
+    config.set_template_dir(template_dir)
 
 
 cli.add_command(publish)
