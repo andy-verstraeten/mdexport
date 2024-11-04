@@ -34,6 +34,7 @@ def cli():
     callback=validate_template,
 )
 def publish(markdown_file: str, output: str, template: str) -> None:
+    config.preflight_checks()
     md_path = Path(markdown_file)
     md_content = read_md_file(md_path)
     html_content = convert_md_to_html(md_content, md_path)
@@ -58,5 +59,4 @@ def set_template_dir(template_dir: Path):
 cli.add_command(publish)
 cli.add_command(set_template_dir, "settemplatedir")
 if __name__ == "__main__":
-    config.preflight_checks()
     cli()

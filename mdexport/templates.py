@@ -5,6 +5,7 @@ from jinja2 import meta
 import jinja2
 
 import re
+from mdexport.config import get_templates_directory
 
 
 class ExpectedMoreMetaDataException(Exception):
@@ -14,15 +15,6 @@ class ExpectedMoreMetaDataException(Exception):
 BODY_VAR = "body"
 
 
-def get_templates_directory(current_path: Path = __file__) -> Path:
-    """Get the path to the "templates" directory of this repo
-
-    Returns:
-        Path: Path to the directory holding the templates
-    """
-    return Path(current_path).resolve().parent.parent / "templates"
-
-
 def get_available_templates() -> List[str]:
     """List all the directories in the templates directory
 
@@ -30,6 +22,9 @@ def get_available_templates() -> List[str]:
         [str]: Available templates
     """
     templates_directory = get_templates_directory()
+    # return an empty list if the directory does not exist.
+    if not templates_directory.is_dir():
+        return []
     return [str(f.name) for f in templates_directory.iterdir() if f.is_dir()]
 
 
