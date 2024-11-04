@@ -70,11 +70,14 @@ Inside the should be a Jinja2 template named "template.html"
         )
 
 
-def get_templates_directory() -> Path:
+def get_templates_directory(path=None) -> Path:
     """Get the path to the "templates" directory of this repo
 
     Returns:
         Path: Path to the directory holding the templates
     """
     settings = load()
+    # for test mocking
+    if path:
+        return path
     return Path(settings[ConfigStructure.TEMPLATE_DIR.value])

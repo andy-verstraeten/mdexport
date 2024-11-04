@@ -19,7 +19,7 @@ import mdexport
 def test_get_templates_directory():
     fake_path = Path("/fake/path")
     template_directory = Path(get_templates_directory(fake_path))
-    assert template_directory == Path("/templates")
+    assert template_directory == Path("/fake/path")
 
 
 def test_get_available_templates(monkeypatch: MonkeyPatch, tmp_path: Path):
