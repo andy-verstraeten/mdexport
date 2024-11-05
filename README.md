@@ -1,3 +1,7 @@
+# Description
+
+Mdexport is CLI tool to publish Markdown files as PDF using Jinja2 templates.
+
 ## Issue with weasyprint
 
 echo 'export DYLD_LIBRARY_PATH=$(brew --prefix)/lib' >> ~/.bashrc
