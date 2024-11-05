@@ -31,7 +31,7 @@ def _get_config_directory() -> Path:
 def load() -> dict:
     config_path = _get_config_directory() / CONFIG_FILENAME
     if not config_path.exists():
-        config_path.touch()
+        config_path.write_text("{}")
     with open(_get_config_directory() / CONFIG_FILENAME, "r") as config_file:
         return json.load(config_file)
 
