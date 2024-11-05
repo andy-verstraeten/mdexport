@@ -6,12 +6,18 @@ import re
 ATTACHMENT_DIRECTORY = "attachments"
 
 
+def convert_metadata_to_html(metadata):
+    html = markdown2.markdown(metadata, extras=["tables"])
+    if html.startswith("<p>"):
+        html = html[3:]
+    if html.endswith("</p>\n"):
+        html = html[:-5]
+    return html
+
+
 def extract_md_metadata(md_file: Path) -> dict:
     # TODO: figure out all md works as values
     metadata = frontmatter.load(md_file).metadata
-    convert_metadata_to_html = lambda metadata: markdown2.markdown(
-        metadata, extras=["tables"]
-    )
     return {key: convert_metadata_to_html(md) for key, md in metadata.items()}
 
 

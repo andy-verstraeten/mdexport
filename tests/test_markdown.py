@@ -6,6 +6,7 @@ from mdexport.markdown import (
     get_base_path,
     embed_to_img_tag,
     ATTACHMENT_DIRECTORY,
+    convert_metadata_to_html,
 )
 
 
@@ -21,9 +22,9 @@ notmetadata: mocknotmetadata
     mock_md_file = tmp_path / "mockfile.md"
     mock_md_file.write_text(MOCK_MD)
     assert extract_md_metadata(mock_md_file) == {
-        "metadata1": "<p>mockmetadata1</p>\n",
-        "metadata2": "<p>mockmetadata2</p>\n",
-        "metadata3": "<p>mockmetadata3</p>\n",
+        "metadata1": "mockmetadata1",
+        "metadata2": "mockmetadata2",
+        "metadata3": "mockmetadata3",
     }
 
 
@@ -63,3 +64,9 @@ def test_embed_to_img_tag():
         embed_to_img_tag(MOCK_MD, Path("/mock/path"))
         == '<img src="/mock/path/test.jpg" alt="test.jpg" />'
     )
+
+
+def test_convert_metadata_to_html_no_surounding_p():
+    metadata = "some metadata"
+    html = convert_metadata_to_html(metadata)
+    assert not html.startswith("<p>") and not html.endswith("</p>\n")
