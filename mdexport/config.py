@@ -29,6 +29,9 @@ def _get_config_directory() -> Path:
 
 
 def load() -> dict:
+    config_path = _get_config_directory() / CONFIG_FILENAME
+    if not config_path.exists():
+        config_path.touch()
     with open(_get_config_directory() / CONFIG_FILENAME, "r") as config_file:
         return json.load(config_file)
 
