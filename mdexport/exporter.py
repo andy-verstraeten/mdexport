@@ -1,7 +1,12 @@
 import weasyprint
+import click
 from uuid import uuid4
 from pathlib import Path
-from mdexport.templates import get_templates_directory
+from mdexport.templates import (
+    get_templates_directory,
+    TemplateDirNotSetException,
+    APP_NAME,
+)
 import re
 
 BASE_STYLE_HTML = """
@@ -73,9 +78,20 @@ def write_template_to_pdf(template: str, filled_template: str, output: Path) -> 
         filled_template (str): _description_
         output (Path): _description_
     """
-    filled_template = insert_base_style(filled_template)
-    render_file = f".{uuid4()}.html"
-    render_full_path = get_templates_directory() / template / render_file
-    render_full_path.write_text(filled_template)
-    weasyprint.HTML(render_full_path).write_pdf(output)
-    render_full_path.unlink()
+    try:
+        filled_template = insert_base_style(filled_template)
+        render_file = f".{uuid4()}.html"
+        render_full_path = get_templates_directory() / template / render_file
+        render_full_path.write_text(filled_template)
+        weasyprint.HTML(render_full_path).write_pdf(output)
+        render_full_path.unlink()
+    except TemplateDirNotSetException:
+        click.echo(
+            f"""ERROR: Template directory not set in mdexport config.
+Please run:
+{APP_NAME} settemplatedir /path/to/templates/
+Your template directory should hold only folders named with the template name.
+Inside the should be a Jinja2 template named "template.html"  
+            """
+        )
+        exit()

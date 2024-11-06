@@ -49,6 +49,12 @@ def test_save_config(monkeypatch: MonkeyPatch, tmp_path: Path):
     assert (tmp_path / CONFIG_FILENAME).read_text() == '{"mock_key": "mock_value"}'
 
 
+def test_get_templates_directory_not_set(monkeypatch: MonkeyPatch):
+    monkeypatch.setattr(mdexport.config, "load", lambda: {})
+    with pytest.raises(TemplateDirNotSetException):
+        get_templates_directory()
+
+
 def test_get_templates_directory_happy_path(monkeypatch: MonkeyPatch):
     monkeypatch.setattr(
         mdexport.config,

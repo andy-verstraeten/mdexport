@@ -5,7 +5,11 @@ from jinja2 import meta
 import jinja2
 import click
 import re
-from mdexport.config import get_templates_directory, TemplateDirNotSetException
+from mdexport.config import (
+    get_templates_directory,
+    TemplateDirNotSetException,
+    APP_NAME,
+)
 
 
 class ExpectedMoreMetaDataException(Exception):
@@ -21,18 +25,31 @@ def get_available_templates() -> List[str]:
     Returns:
         [str]: Available templates
     """
+    try:
+        templates_directory = get_templates_directory()
 
-    templates_directory = get_templates_directory()
-
-    # return an empty list if the directory does not exist.
-    if not templates_directory.is_dir():
+        # return an empty list if the directory does not exist.
+        if not templates_directory.is_dir():
+            return []
+        return [str(f.name) for f in templates_directory.iterdir() if f.is_dir()]
+    except TemplateDirNotSetException:
         return []
-    return [str(f.name) for f in templates_directory.iterdir() if f.is_dir()]
 
 
-def read_template(template: str) -> str:
-    current_template = get_templates_directory() / template / "template.html"
-    return current_template.read_text()
+def read_template(template: str) -> str | None:
+    try:
+        current_template = get_templates_directory() / template / "template.html"
+        return current_template.read_text()
+    except TemplateDirNotSetException:
+        click.echo(
+            f"""ERROR: Template directory not set in mdexport config.
+Please run:
+{APP_NAME} settemplatedir /path/to/templates/
+Your template directory should hold only folders named with the template name.
+Inside the should be a Jinja2 template named "template.html"  
+            """
+        )
+        exit()
 
 
 def fill_template(template: str, html_content: str, metadata: dict = {}) -> str:

@@ -89,12 +89,4 @@ def get_templates_directory() -> Path:
     if ConfigStructure.TEMPLATE_DIR.value in settings.keys():
         return Path(settings[ConfigStructure.TEMPLATE_DIR.value])
     else:
-        click.echo(
-            """ERORR: The template directory is not set. Please run:
-Please run:
-{APP_NAME} settemplatedir /path/to/templates/
-Your template directory should hold only folders named with the template name.
-Inside the should be a Jinja2 template named "template.html"  
-                   """
-        )
-        exit()
+        raise TemplateDirNotSetException()
