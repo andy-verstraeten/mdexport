@@ -3,9 +3,9 @@ from typing import List, Set
 
 from jinja2 import meta
 import jinja2
-
+import click
 import re
-from mdexport.config import get_templates_directory
+from mdexport.config import get_templates_directory, TemplateDirNotSetException
 
 
 class ExpectedMoreMetaDataException(Exception):
@@ -21,7 +21,9 @@ def get_available_templates() -> List[str]:
     Returns:
         [str]: Available templates
     """
+
     templates_directory = get_templates_directory()
+
     # return an empty list if the directory does not exist.
     if not templates_directory.is_dir():
         return []

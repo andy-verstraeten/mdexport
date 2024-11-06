@@ -1,6 +1,17 @@
+import mdexport.config
 from pytest import MonkeyPatch
+import pytest
 from pathlib import Path
-from mdexport.config import _get_config_directory, APP_NAME, CONFIG_FILENAME, load, save
+from mdexport.config import (
+    _get_config_directory,
+    APP_NAME,
+    CONFIG_FILENAME,
+    load,
+    save,
+    get_templates_directory,
+    TemplateDirNotSetException,
+    ConfigStructure,
+)
 import mdexport
 
 
@@ -36,3 +47,12 @@ def test_save_config(monkeypatch: MonkeyPatch, tmp_path: Path):
     monkeypatch.setattr(mdexport.config, "_get_config_directory", lambda: tmp_path)
     save(MOCK_CONFIG)
     assert (tmp_path / CONFIG_FILENAME).read_text() == '{"mock_key": "mock_value"}'
+
+
+def test_get_templates_directory_happy_path(monkeypatch: MonkeyPatch):
+    monkeypatch.setattr(
+        mdexport.config,
+        "load",
+        lambda: {ConfigStructure.TEMPLATE_DIR.value: "/path/to/templates"},
+    )
+    assert get_templates_directory() == Path("/path/to/templates")

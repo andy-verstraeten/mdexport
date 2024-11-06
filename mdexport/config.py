@@ -61,7 +61,7 @@ Your template directory should hold only folders named with the template name.
 Inside the should be a Jinja2 template named "template.html"
 """
         )
-
+        exit()
     if not Path(settings[ConfigStructure.TEMPLATE_DIR.value]).is_dir():
         click.echo(
             """ERROR: Template directory set in the configurations is invalid.
@@ -71,16 +71,30 @@ Your template directory should hold only folders named with the template name.
 Inside the should be a Jinja2 template named "template.html"                  
 """
         )
+        exit()
 
 
-def get_templates_directory(path=None) -> Path:
+class TemplateDirNotSetException(Exception):
+    pass
+
+
+def get_templates_directory() -> Path:
     """Get the path to the "templates" directory of this repo
 
     Returns:
         Path: Path to the directory holding the templates
     """
     settings = load()
-    # for test mocking
-    if path:
-        return path
-    return Path(settings[ConfigStructure.TEMPLATE_DIR.value])
+
+    if ConfigStructure.TEMPLATE_DIR.value in settings.keys():
+        return Path(settings[ConfigStructure.TEMPLATE_DIR.value])
+    else:
+        click.echo(
+            """ERORR: The template directory is not set. Please run:
+Please run:
+{APP_NAME} settemplatedir /path/to/templates/
+Your template directory should hold only folders named with the template name.
+Inside the should be a Jinja2 template named "template.html"  
+                   """
+        )
+        exit()

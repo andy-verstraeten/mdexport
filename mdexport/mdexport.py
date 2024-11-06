@@ -45,7 +45,7 @@ def publish(markdown_file: str, output: str, template: str) -> None:
         try:
             match_metadata_to_template(template, metadata.keys())
         except ExpectedMoreMetaDataException as e:
-            print(f"!!!!! WARNING: {e}")
+            click.echo(f"!!!!! WARNING: {e}")
         filled_template = fill_template(template, html_content, metadata)
         write_template_to_pdf(template, filled_template, Path(output))
 
