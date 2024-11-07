@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "mdexport"
+version = "0.0.8"
+description = "CLI tool to export markdown to pdf using jinja2 templates."
+authors = ["andyverstraeten <andy.verstraeten@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+click = "^8.1.7"
+markdown2 = "^2.5.1"
+weasyprint = "^63.0"
+jinja2 = "^3.1.4"
+python-frontmatter = "^1.1.0"
+
+[tool.poetry.scripts]
+mdexport = "mdexport.mdexport:cli"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
