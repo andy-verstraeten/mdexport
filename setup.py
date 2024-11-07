@@ -13,5 +13,5 @@ setup(
         "pytest",
         "pytest-cov",
     ],
-    entry_points={"console_scripts": ["mdexport = mdexport:cli"]},
+    entry_points={"console_scripts": ["mdexport = mdexport.mdexport:cli"]},
 )
