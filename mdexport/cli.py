@@ -27,7 +27,8 @@ def validate_template(ctx: click.Context, param: click.Option, value: str) -> st
 
 def generate_template_help():
     template_options = get_available_templates()
-    return f"Provide one of the following templates: {",".join(template_options)}"
+    templates_string = ",".join(template_options)
+    return f"Provide one of the following templates: {templates_string}"
 
 
 def validate_template_dir(
