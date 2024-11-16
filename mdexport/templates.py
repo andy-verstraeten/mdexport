@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Set
+from typing import List, Set, Union
 
 from jinja2 import meta
 import jinja2
@@ -36,7 +36,7 @@ def get_available_templates() -> List[str]:
         return []
 
 
-def read_template(template: str) -> str | None:
+def read_template(template: str):
     try:
         current_template = get_templates_directory() / template / "template.html"
         return current_template.read_text()
