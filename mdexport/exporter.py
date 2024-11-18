@@ -83,7 +83,8 @@ def write_template_to_pdf(template: str, filled_template: str, output: Path) -> 
         render_file = f".{uuid4()}.html"
         render_full_path = get_templates_directory() / template / render_file
         render_full_path.write_text(filled_template)
-        weasyprint.HTML(render_full_path, base_url=Path.cwd()).write_pdf(output)
+        print(filled_template)
+        weasyprint.HTML(render_full_path).write_pdf(output)
         render_full_path.unlink()
     except TemplateDirNotSetException:
         click.echo(

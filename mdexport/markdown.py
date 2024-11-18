@@ -28,8 +28,29 @@ def read_md_file(md_file: Path) -> str:
 def convert_md_to_html(md_content: str, md_path: Path) -> str:
     attachment_path = get_base_path(md_path)
     md_content = embed_to_img_tag(md_content, attachment_path)
+    md_content = md_relative_img_to_absolute(md_content, md_path)
     html_text = markdown2.markdown(md_content, extras=["tables", "toc", "fenced-code-blocks"])
     return html_text
+
+def md_relative_img_to_absolute(md_content: str, md_path: Path)->str:
+    md_path = md_path.parent
+    image_regex = r"!\[.*?\]\((.*?)\)"
+
+    def replace_path(match):
+        img_path = match.group(1)
+        # Skip URLs
+        if re.match(r'https?://', img_path):
+            return match.group(0)
+        # Check if the path is already absolute
+        if Path(img_path).is_absolute():
+            return match.group(0)
+        # Prepend the absolute path to the relative path
+        absolute_path = (md_path / img_path).resolve()
+        return f"![{match.group(0).split('](')[0][2:]}]({absolute_path})"
+
+    # Replace all matches with the updated paths
+    updated_content = re.sub(image_regex, replace_path, md_content)
+    return updated_content
 
 
 def get_base_path(md_path: Path) -> Path:

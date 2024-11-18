@@ -4,6 +4,7 @@ from mdexport.markdown import (
     read_md_file,
     convert_md_to_html,
     get_base_path,
+    md_relative_img_to_absolute,
     embed_to_img_tag,
     ATTACHMENT_DIRECTORY,
     convert_metadata_to_html,
@@ -70,3 +71,22 @@ def test_convert_metadata_to_html_no_surounding_p():
     metadata = "some metadata"
     html = convert_metadata_to_html(metadata)
     assert not html.startswith("<p>") and not html.endswith("</p>\n")
+
+def test_md_relative_img_to_absolute():
+    md_content = "![Alan Turing](imgs/alan.jpg)"
+    md_path = Path("/path/to/test.md")
+    result = md_relative_img_to_absolute(md_content, md_path)
+    assert result == "![Alan Turing](/path/to/imgs/alan.jpg)"
+
+def test_md_relative_img_to_absolute_url():
+    md_content = "![Alan Turing](http://www.website.com/imgs/alan.jpg)"
+    md_path = Path("/path/to/test.md")
+    result = md_relative_img_to_absolute(md_content, md_path)
+    assert result == "![Alan Turing](http://www.website.com/imgs/alan.jpg)"
+
+def test_md_relative_img_to_absolute_absolute_path_input():
+    md_content = "![Alan Turing](/imgs/alan.jpg)"
+    md_path = Path("/path/to/test.md")
+    result = md_relative_img_to_absolute(md_content, md_path)
+    assert result == "![Alan Turing](/imgs/alan.jpg)"
+    
