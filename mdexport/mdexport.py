@@ -1,20 +1,20 @@
 import click
 from pathlib import Path
 
-from .cli import (
+from mdexport.cli import (
     validate_md_file,
     validate_output_file,
     generate_template_help,
     validate_template,
     validate_template_dir,
 )
-from .markdown import read_md_file, convert_md_to_html, extract_md_metadata
-from .templates import (
+from mdexport.markdown import read_md_file, convert_md_to_html, extract_md_metadata
+from mdexport.templates import (
     fill_template,
     match_metadata_to_template,
     ExpectedMoreMetaDataException,
 )
-from .exporter import write_html_to_pdf, write_template_to_pdf
+from mdexport.exporter import write_html_to_pdf, write_template_to_pdf
 import mdexport.config as config
 
 
