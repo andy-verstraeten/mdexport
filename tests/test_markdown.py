@@ -46,7 +46,7 @@ def test_convert_md_to_html():
 """
     assert (
         convert_md_to_html(MOCK_MD, Path("/"))
-        == """<h1>Title1</h1>
+        == """<h1 id="title1">Title1</h1>
 
 <pre><code>content
 </code></pre>
