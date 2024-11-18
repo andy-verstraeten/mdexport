@@ -1,6 +1,6 @@
 import click
 from pathlib import Path
-from .templates import get_available_templates
+from mdexport.templates import get_available_templates
 
 
 def validate_output_file(ctx: click.Context, param: click.Option, value: str) -> str:

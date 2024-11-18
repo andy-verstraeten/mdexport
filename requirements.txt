@@ -5,3 +5,5 @@ jinja2
 python-frontmatter
 pytest
 pytest-cov
+pygments
+poetry
