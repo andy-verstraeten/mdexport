@@ -28,7 +28,7 @@ def read_md_file(md_file: Path) -> str:
 def convert_md_to_html(md_content: str, md_path: Path) -> str:
     attachment_path = get_base_path(md_path)
     md_content = embed_to_img_tag(md_content, attachment_path)
-    html_text = markdown2.markdown(md_content, extras=["tables"])
+    html_text = markdown2.markdown(md_content, extras=["tables", "toc", "fenced-code-blocks"])
     return html_text
 
 
