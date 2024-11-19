@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{ include = "mdexport"}] 
 
 [tool.poetry.dependencies]
-python = ">=3.12,<4.0"
+python = ">=3.10,<4.0"
 click = "^8.1.7"
 markdown2 = "^2.5.1"
 weasyprint = "^63.0"
