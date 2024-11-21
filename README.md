@@ -31,7 +31,7 @@ templates/
 Set the path of your template directory in the mdexport config.
 
 ```bash
-mdexport settemplatedir /path/to/templates
+mdexport options set template_dir /path/to/templates
 ```
 
 ## Create your template
@@ -69,6 +69,14 @@ Body of my markdown file.
 
 ```bash
 mdexport publish file.md -o output.pdf -t invoice
+```
+
+## Custom attachments folder
+
+In case you are using Obsidian or some other tool that places images in a seperate folder you can set the name of this folder as:
+
+```bash
+mdexport options set attachments images_folder
 ```
 
 # Dependencies

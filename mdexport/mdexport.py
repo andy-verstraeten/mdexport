@@ -6,7 +6,6 @@ from mdexport.cli import (
     validate_output_file,
     generate_template_help,
     validate_template,
-    validate_template_dir,
 )
 from mdexport.markdown import read_md_file, convert_md_to_html, extract_md_metadata
 from mdexport.templates import (
@@ -15,7 +14,7 @@ from mdexport.templates import (
     ExpectedMoreMetaDataException,
 )
 from mdexport.exporter import write_html_to_pdf, write_template_to_pdf
-from mdexport.config import config
+from mdexport.config import config, CONFIG_HELP
 
 
 @click.group()
@@ -62,7 +61,10 @@ def list():
     """List all available options."""
     click.echo("Available options:")
     for key, value in config.config.items():
-        click.echo(f"{key}: {value}")
+        click.echo("")
+        click.echo(f"   {key}: {value}")
+        click.echo("")
+        click.echo(CONFIG_HELP[key])
 
 
 @options.command()

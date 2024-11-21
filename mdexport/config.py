@@ -26,6 +26,11 @@ DEFAULT_CONFIG = {
     ConfigStructure.ATTACHMENTS_FOLDER: "attachments",
 }
 
+CONFIG_HELP = {
+    ConfigStructure.TEMPLATE_DIR: "Directory where you store your templates. Each template should be in a different folder and contain a template.html file.",
+    ConfigStructure.ATTACHMENTS_FOLDER: "If you use a tool like Obsidian that uses wikilinks for images and stores them in a custom subfolder.",
+}
+
 
 class InvalidKeyException(Exception):
     pass
