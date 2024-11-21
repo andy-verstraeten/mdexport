@@ -6,7 +6,6 @@ from mdexport.cli import (
     validate_output_file,
     generate_template_help,
     validate_template,
-    validate_template_dir,
 )
 from mdexport.markdown import read_md_file, convert_md_to_html, extract_md_metadata
 from mdexport.templates import (
@@ -15,7 +14,7 @@ from mdexport.templates import (
     ExpectedMoreMetaDataException,
 )
 from mdexport.exporter import write_html_to_pdf, write_template_to_pdf
-import mdexport.config as config
+from mdexport.config import config, CONFIG_HELP
 
 
 @click.group()
@@ -34,7 +33,8 @@ def cli():
     callback=validate_template,
 )
 def publish(markdown_file: str, output: str, template: str) -> None:
-    config.preflight_checks()
+    """Publish Markdown files to PDF."""
+    config.pre_publish_config_check()
     md_path = Path(markdown_file)
     md_content = read_md_file(md_path)
     html_content = convert_md_to_html(md_content, md_path)
@@ -50,13 +50,34 @@ def publish(markdown_file: str, output: str, template: str) -> None:
         write_template_to_pdf(template, filled_template, Path(output))
 
 
-@click.command()
-@click.argument("template_dir", type=str, callback=validate_template_dir)
-def set_template_dir(template_dir: Path):
-    config.set_template_dir(template_dir)
+@click.group()
+def options():
+    """Manage MDExport options."""
+    pass
+
+
+@options.command()
+def list():
+    """List all available options."""
+    click.echo("Available options:")
+    for key, value in config.config.items():
+        click.echo("")
+        click.echo(f"   {key}: {value}")
+        click.echo("")
+        click.echo(CONFIG_HELP[key])
+
+
+@options.command()
+@click.argument("key")
+@click.argument("value")
+def set(key: str, value: str):
+    """Set an option value."""
+    print(key, value)
+    config.set(key, value)
+    config.save()
 
 
 cli.add_command(publish)
-cli.add_command(set_template_dir, "settemplatedir")
+cli.add_command(options)
 if __name__ == "__main__":
     cli()
