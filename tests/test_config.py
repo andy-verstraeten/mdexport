@@ -59,6 +59,6 @@ def test_get_templates_directory_happy_path(monkeypatch: MonkeyPatch):
     monkeypatch.setattr(
         mdexport.config,
         "load",
-        lambda: {ConfigStructure.TEMPLATE_DIR.value: "/path/to/templates"},
+        lambda: {ConfigStructure.TEMPLATE_DIR: "/path/to/templates"},
     )
     assert get_templates_directory() == Path("/path/to/templates")

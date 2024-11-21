@@ -2,8 +2,9 @@ import markdown2
 import frontmatter
 from pathlib import Path
 import re
+from mdexport.config import get_attachment_dir
 
-ATTACHMENT_DIRECTORY = "attachments"
+ATTACHMENT_DIRECTORY = get_attachment_dir()
 
 
 def convert_metadata_to_html(metadata):
@@ -29,17 +30,20 @@ def convert_md_to_html(md_content: str, md_path: Path) -> str:
     attachment_path = get_base_path(md_path)
     md_content = embed_to_img_tag(md_content, attachment_path)
     md_content = md_relative_img_to_absolute(md_content, md_path)
-    html_text = markdown2.markdown(md_content, extras=["tables", "toc", "fenced-code-blocks"])
+    html_text = markdown2.markdown(
+        md_content, extras=["tables", "toc", "fenced-code-blocks"]
+    )
     return html_text
 
-def md_relative_img_to_absolute(md_content: str, md_path: Path)->str:
+
+def md_relative_img_to_absolute(md_content: str, md_path: Path) -> str:
     md_path = md_path.parent
     image_regex = r"!\[.*?\]\((.*?)\)"
 
     def replace_path(match):
         img_path = match.group(1)
         # Skip URLs
-        if re.match(r'https?://', img_path):
+        if re.match(r"https?://", img_path):
             return match.group(0)
         # Check if the path is already absolute
         if Path(img_path).is_absolute():

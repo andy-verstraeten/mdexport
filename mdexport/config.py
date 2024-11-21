@@ -2,14 +2,87 @@ from pathlib import Path
 import os
 import json
 import click
-from enum import Enum
+
 
 APP_NAME = "mdexport"
 CONFIG_FILENAME = "config.json"
 
 
-class ConfigStructure(Enum):
+class ConfigStructure:
     TEMPLATE_DIR = "template_dir"
+    ATTACHMENTS_FOLDER = "attachments"
+
+
+def get_possible_config_keys() -> list[str]:
+    return [
+        getattr(ConfigStructure, key)
+        for key in vars(ConfigStructure)
+        if not key.startswith("__")
+    ]
+
+
+DEFAULT_CONFIG = {
+    ConfigStructure.TEMPLATE_DIR: "",
+    ConfigStructure.ATTACHMENTS_FOLDER: "attachments",
+}
+
+
+class InvalidKeyException(Exception):
+    pass
+
+
+class Config:
+    config = {}
+
+    def __init__(self):
+        if not (_get_config_directory() / CONFIG_FILENAME).is_file():
+            json_string = json.dumps(DEFAULT_CONFIG)
+            (_get_config_directory() / CONFIG_FILENAME).write_text(json_string)
+        with open(_get_config_directory() / CONFIG_FILENAME, "r") as config_file:
+            self.config = json.load(config_file)
+        for key in get_possible_config_keys():
+            if key not in self.config.keys():
+                self.set(key, DEFAULT_CONFIG[key])
+
+    def load(self):
+
+        if (
+            ConfigStructure.TEMPLATE_DIR not in self.config.keys()
+            or self.config[ConfigStructure.TEMPLATE_DIR] == ""
+        ):
+            click.echo(
+                f"""ERROR: Template directory not set.
+Please run:
+{APP_NAME} options set {ConfigStructure.TEMPLATE_DIR} /path/to/templates/
+Your template directory should hold only folders named with the template name.
+Inside the should be a Jinja2 template named "template.html"
+"""
+            )
+            exit()
+
+        if not Path(self.config[ConfigStructure.TEMPLATE_DIR]).is_dir():
+            click.echo(
+                """ERROR: Template directory set in the configurations is invalid.
+ Please run:
+{APP_NAME} options set {ConfigStructure.TEMPLATE_DIR} /path/to/templates/
+Your template directory should hold only folders named with the template name.
+Inside the should be a Jinja2 template named "template.html"                  
+"""
+            )
+            exit()
+
+    def save(self) -> None:
+        with open(_get_config_directory() / CONFIG_FILENAME, "w") as config_file:
+            json.dump(self.config, config_file)
+
+    def set(self, key, value):
+        if key in get_possible_config_keys():
+            self.config[key] = value
+            self.save()
+        else:
+            raise InvalidKeyException(
+                """{key} is not a valid options. Use 'mdexports options list' to see a list of valid option keys."""
+            )
 
 
 def _get_config_directory() -> Path:
@@ -28,52 +101,6 @@ def _get_config_directory() -> Path:
     return config_dir
 
 
-def load() -> dict:
-    config_path = _get_config_directory() / CONFIG_FILENAME
-    if not config_path.exists():
-        config_path.write_text("{}")
-    with open(_get_config_directory() / CONFIG_FILENAME, "r") as config_file:
-        return json.load(config_file)
-
-
-def save(config: dict) -> None:
-    with open(_get_config_directory() / CONFIG_FILENAME, "w") as config_file:
-        json.dump(config, config_file)
-
-
-def set_template_dir(template_dir: Path):
-    settings = load()
-    settings[ConfigStructure.TEMPLATE_DIR.value] = str(template_dir)
-    save(settings)
-
-
-def preflight_checks():
-    if not (_get_config_directory() / CONFIG_FILENAME).is_file():
-        (_get_config_directory() / CONFIG_FILENAME).write_text("{}")
-
-    settings = load()
-    if ConfigStructure.TEMPLATE_DIR.value not in settings.keys():
-        click.echo(
-            f"""ERROR: Template directory not set.
-Please run:
-{APP_NAME} settemplatedir /path/to/templates/
-Your template directory should hold only folders named with the template name.
-Inside the should be a Jinja2 template named "template.html"
-"""
-        )
-        exit()
-    if not Path(settings[ConfigStructure.TEMPLATE_DIR.value]).is_dir():
-        click.echo(
-            """ERROR: Template directory set in the configurations is invalid.
- Please run:
-{APP_NAME} settemplatedir /path/to/templates/
-Your template directory should hold only folders named with the template name.
-Inside the should be a Jinja2 template named "template.html"                  
-"""
-        )
-        exit()
-
-
 class TemplateDirNotSetException(Exception):
     pass
 
@@ -84,9 +111,16 @@ def get_templates_directory() -> Path:
     Returns:
         Path: Path to the directory holding the templates
     """
-    settings = load()
 
-    if ConfigStructure.TEMPLATE_DIR.value in settings.keys():
-        return Path(settings[ConfigStructure.TEMPLATE_DIR.value])
+    if ConfigStructure.TEMPLATE_DIR in config.config.keys():
+        return Path(config.config[ConfigStructure.TEMPLATE_DIR])
     else:
         raise TemplateDirNotSetException()
+
+
+def get_attachment_dir() -> Path:
+    return Path(config.config[ConfigStructure.ATTACHMENTS_FOLDER])
+
+
+config = Config()
+config.load()
