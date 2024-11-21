@@ -38,14 +38,28 @@ class Config:
         if not (_get_config_directory() / CONFIG_FILENAME).is_file():
             json_string = json.dumps(DEFAULT_CONFIG)
             (_get_config_directory() / CONFIG_FILENAME).write_text(json_string)
+
+    def load(self):
         with open(_get_config_directory() / CONFIG_FILENAME, "r") as config_file:
             self.config = json.load(config_file)
         for key in get_possible_config_keys():
             if key not in self.config.keys():
                 self.set(key, DEFAULT_CONFIG[key])
 
-    def load(self):
+    def save(self) -> None:
+        with open(_get_config_directory() / CONFIG_FILENAME, "w") as config_file:
+            json.dump(self.config, config_file)
 
+    def set(self, key, value):
+        if key in get_possible_config_keys():
+            self.config[key] = value
+            self.save()
+        else:
+            raise InvalidKeyException(
+                """{key} is not a valid options. Use 'mdexports options list' to see a list of valid option keys."""
+            )
+
+    def pre_publish_config_check(self):
         if (
             ConfigStructure.TEMPLATE_DIR not in self.config.keys()
             or self.config[ConfigStructure.TEMPLATE_DIR] == ""
@@ -70,19 +84,6 @@ Inside the should be a Jinja2 template named "template.html"
 """
             )
             exit()
-
-    def save(self) -> None:
-        with open(_get_config_directory() / CONFIG_FILENAME, "w") as config_file:
-            json.dump(self.config, config_file)
-
-    def set(self, key, value):
-        if key in get_possible_config_keys():
-            self.config[key] = value
-            self.save()
-        else:
-            raise InvalidKeyException(
-                """{key} is not a valid options. Use 'mdexports options list' to see a list of valid option keys."""
-            )
 
 
 def _get_config_directory() -> Path:

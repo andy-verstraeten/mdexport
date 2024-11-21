@@ -34,6 +34,7 @@ def cli():
     callback=validate_template,
 )
 def publish(markdown_file: str, output: str, template: str) -> None:
+    config.pre_publish_config_check()
     md_path = Path(markdown_file)
     md_content = read_md_file(md_path)
     html_content = convert_md_to_html(md_content, md_path)
