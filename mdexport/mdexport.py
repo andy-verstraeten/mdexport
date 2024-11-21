@@ -34,6 +34,7 @@ def cli():
     callback=validate_template,
 )
 def publish(markdown_file: str, output: str, template: str) -> None:
+    """Publish Markdown files to PDF."""
     config.pre_publish_config_check()
     md_path = Path(markdown_file)
     md_content = read_md_file(md_path)
@@ -52,7 +53,7 @@ def publish(markdown_file: str, output: str, template: str) -> None:
 
 @click.group()
 def options():
-    """Manage tool options."""
+    """Manage MDExport options."""
     pass
 
 
