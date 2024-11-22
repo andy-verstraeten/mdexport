@@ -65,6 +65,12 @@ to: Bob
 Body of my markdown file.
 ```
 
+If you want to have mdexport generate an empty Markdown file with the metadata keys your template expects you can run the following:
+
+```bash
+mdexport emptymd test.md -t templatename
+```
+
 ## Generate pdf
 
 ```bash
