@@ -6,6 +6,7 @@ from mdexport.cli import (
     validate_output_file,
     generate_template_help,
     validate_template,
+    validate_output_md,
 )
 from mdexport.markdown import read_md_file, convert_md_to_html, extract_md_metadata
 from mdexport.templates import (
@@ -13,6 +14,7 @@ from mdexport.templates import (
     match_metadata_to_template,
     ExpectedMoreMetaDataException,
 )
+from mdexport.markdown import generate_empty_md
 from mdexport.exporter import write_html_to_pdf, write_template_to_pdf
 from mdexport.config import config, CONFIG_HELP
 
@@ -50,6 +52,19 @@ def publish(markdown_file: str, output: str, template: str) -> None:
         write_template_to_pdf(template, filled_template, Path(output))
 
 
+@click.command()
+@click.argument(
+    "output_file",
+    required=True,
+    type=str,
+    callback=validate_output_md,
+)
+@click.option("--template", "-t", help="", callback=validate_template)
+def empty_markdown(output_file: Path, template: str):
+    """Create empty markdown files with the metadata fields in template."""
+    generate_empty_md(output_file, template)
+
+
 @click.group()
 def options():
     """Manage MDExport options."""
@@ -77,7 +92,10 @@ def set(key: str, value: str):
     config.save()
 
 
-cli.add_command(publish)
 cli.add_command(options)
+cli.add_command(empty_markdown, "emptymd")
+cli.add_command(publish)
+
+
 if __name__ == "__main__":
     cli()

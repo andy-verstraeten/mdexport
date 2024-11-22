@@ -46,3 +46,13 @@ def validate_template_dir(
         )
 
     return Path(template_dir)
+
+
+def validate_output_md(ctx: click.Context, param: click.Option, path: str) -> Path:
+    md_path = Path(path)
+    if md_path.parent.is_dir() and md_path.suffix == ".md":
+        return md_path
+    else:
+        raise click.BadParameter(
+            "The provided output markdown file or path is invalid."
+        )

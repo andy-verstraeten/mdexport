@@ -85,3 +85,8 @@ def extract_variables(template_string: str) -> Set[str]:
     parsed_content = env.parse(template_string)
     variables = meta.find_undeclared_variables(parsed_content)
     return set(variables)
+
+
+def get_variables_from_template(template: str):
+    template_html = read_template(template)
+    return list(filter(lambda var: var != "body", extract_variables(template_html)))

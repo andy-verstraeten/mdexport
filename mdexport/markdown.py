@@ -2,9 +2,19 @@ import markdown2
 import frontmatter
 from pathlib import Path
 import re
+from mdexport.templates import get_variables_from_template
 from mdexport.config import get_attachment_dir
 
 ATTACHMENT_DIRECTORY = get_attachment_dir()
+
+
+def generate_empty_md(output_file: Path, template: str):
+    variables = get_variables_from_template(template)
+    md_text = "---\n"
+    for variable in variables:
+        md_text += f"{variable}:\n"
+    md_text += "---\n"
+    output_file.write_text(md_text)
 
 
 def convert_metadata_to_html(metadata):
