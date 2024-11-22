@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mdexport"
-version = "0.2.0"
+version = "0.5.0"
 description = "CLI tool to export markdown to pdf using jinja2 templates."
 authors = ["andyverstraeten <andy.verstraeten@gmail.com>"]
 readme = "README.md"
