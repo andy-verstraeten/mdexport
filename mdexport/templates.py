@@ -30,7 +30,11 @@ def get_available_templates() -> List[str]:
         # return an empty list if the directory does not exist.
         if not templates_directory.is_dir():
             return []
-        return [str(f.name) for f in templates_directory.iterdir() if f.is_dir()]
+        return [
+            str(f.name)
+            for f in templates_directory.iterdir()
+            if f.is_dir() and (f / "template.html").is_file()
+        ]
     except TemplateDirNotSetException:
         return []
 
