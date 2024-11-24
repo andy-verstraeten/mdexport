@@ -1,16 +1,9 @@
-import mdexport.config
 from pytest import MonkeyPatch
-import pytest
 from pathlib import Path
 from mdexport.config import (
     _get_config_directory,
     APP_NAME,
-    CONFIG_FILENAME,
-    get_templates_directory,
-    TemplateDirNotSetException,
-    ConfigStructure,
 )
-import mdexport
 
 
 def test_config_directory_windows(monkeypatch: MonkeyPatch, tmp_path: Path):

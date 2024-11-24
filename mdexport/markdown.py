@@ -6,6 +6,7 @@ from mdexport.templates import get_variables_from_template
 from mdexport.config import get_attachment_dir
 
 ATTACHMENT_DIRECTORY = get_attachment_dir()
+MARKDOWN_EXTRAS = ["tables", "toc", "fenced-code-blocks"]
 
 
 def generate_empty_md(output_file: Path, template: str):
@@ -18,7 +19,7 @@ def generate_empty_md(output_file: Path, template: str):
 
 
 def convert_metadata_to_html(metadata):
-    html = markdown2.markdown(metadata, extras=["tables"])
+    html = markdown2.markdown(metadata, extras=MARKDOWN_EXTRAS)
     if html.startswith("<p>"):
         html = html[3:]
     if html.endswith("</p>\n"):
@@ -40,9 +41,7 @@ def convert_md_to_html(md_content: str, md_path: Path) -> str:
     attachment_path = get_base_path(md_path)
     md_content = embed_to_img_tag(md_content, attachment_path)
     md_content = md_relative_img_to_absolute(md_content, md_path)
-    html_text = markdown2.markdown(
-        md_content, extras=["tables", "toc", "fenced-code-blocks"]
-    )
+    html_text = markdown2.markdown(md_content, extras=MARKDOWN_EXTRAS)
     return html_text
 
 

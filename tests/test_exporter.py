@@ -1,8 +1,6 @@
 import mdexport.exporter
-import uuid
 from mdexport.exporter import (
     insert_base_style,
-    BASE_STYLE_HTML,
     write_html_to_pdf,
     write_template_to_pdf,
 )

@@ -1,10 +1,9 @@
-from pathlib import Path
-from typing import List, Set, Union
+from typing import List, Set
 
 from jinja2 import meta
 import jinja2
 import click
-import re
+
 from mdexport.config import (
     get_templates_directory,
     TemplateDirNotSetException,
