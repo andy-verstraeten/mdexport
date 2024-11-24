@@ -87,9 +87,9 @@ def list():
 @click.argument("value")
 def set(key: str, value: str):
     """Set an option value."""
-    print(key, value)
     config.set(key, value)
     config.save()
+    click.echo(f"Succesfully set {key}: {value}")
 
 
 cli.add_command(options)
