@@ -8,7 +8,6 @@ from mdexport.config import (
     ConfigStructure,
 )
 import mdexport.config
-import sys
 
 
 def test_config_directory_windows(monkeypatch: MonkeyPatch, tmp_path: Path):
