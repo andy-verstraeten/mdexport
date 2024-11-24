@@ -4,6 +4,8 @@ Mdexport is CLI tool to publish Markdown files as PDF using Jinja2 templates. Yo
 
 Designed to work with Obsidian.
 
+![Video deomo](demo.gif)
+
 # Installation
 
 ```bash
