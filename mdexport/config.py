@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 import json
 import click
-
+from sys import exit
 
 APP_NAME = "mdexport"
 CONFIG_FILENAME = "config.json"
