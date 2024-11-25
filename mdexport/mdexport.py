@@ -59,7 +59,13 @@ def publish(markdown_file: str, output: str, template: str) -> None:
     type=str,
     callback=validate_output_md,
 )
-@click.option("--template", "-t", help="", callback=validate_template)
+@click.option(
+    "--template",
+    "-t",
+    help=generate_template_help(),
+    required=True,
+    callback=validate_template,
+)
 def empty_markdown(output_file: Path, template: str):
     """Create empty markdown files with the metadata fields in template."""
     generate_empty_md(output_file, template)
