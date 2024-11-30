@@ -51,11 +51,13 @@ def insert_base_style(html_text: str) -> str:
         )
     else:
         html_text = f"""<html>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <head>
-        {BASE_STYLE_HTML}
+            {BASE_STYLE_HTML}
         </head>
         <body>
-        {html_text}
+            {html_text}
         </body>
         </html>
         """
@@ -63,13 +65,17 @@ def insert_base_style(html_text: str) -> str:
     return html_text
 
 
+"""
 def write_html_to_pdf(html_content: str, output: Path) -> None:
     html_content = insert_base_style(html_content)
     # base_url refers to the highest root directory. Required to render absolute path image paths
     weasyprint.HTML(string=html_content, base_url=Path.cwd().root).write_pdf(output)
+"""
 
 
-def write_template_to_pdf(template: str, filled_template: str, output: Path) -> None:
+def write_template_to_pdf(
+    template: str | None, filled_template: str, output: Path
+) -> None:
     """Writes the filled out html template to a uuid named html file in the template folder
     and renders it to the output path as a pdf.
 
@@ -81,6 +87,9 @@ def write_template_to_pdf(template: str, filled_template: str, output: Path) -> 
     try:
         filled_template = insert_base_style(filled_template)
         render_file = f".{uuid4()}.html"
+        if not template:
+            template = ""
+            filled_template = insert_base_style(filled_template)
         render_full_path = get_templates_directory() / template / render_file
         render_full_path.write_text(filled_template)
         weasyprint.HTML(render_full_path).write_pdf(output)

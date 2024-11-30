@@ -45,6 +45,11 @@ def convert_md_to_html(md_content: str, md_path: Path) -> str:
     return html_text
 
 
+def generate_toc(md_content: str, md_path: Path):
+    toc_html = markdown2.markdown(md_content, extras=MARKDOWN_EXTRAS).toc_html
+    content_html = convert_md_to_html(md_content, md_path)
+
+
 def md_relative_img_to_absolute(md_content: str, md_path: Path) -> str:
     md_path = md_path.parent
     image_regex = r"!\[.*?\]\((.*?)\)"

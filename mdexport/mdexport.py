@@ -15,7 +15,7 @@ from mdexport.templates import (
     ExpectedMoreMetaDataException,
 )
 from mdexport.markdown import generate_empty_md
-from mdexport.exporter import write_html_to_pdf, write_template_to_pdf
+from mdexport.exporter import write_template_to_pdf
 from mdexport.config import config, CONFIG_HELP
 
 
@@ -40,16 +40,16 @@ def publish(markdown_file: str, output: str, template: str) -> None:
     md_path = Path(markdown_file)
     md_content = read_md_file(md_path)
     html_content = convert_md_to_html(md_content, md_path)
-    if not template:
-        write_html_to_pdf(html_content, Path(output))
-    else:
-        metadata = extract_md_metadata(Path(markdown_file))
+    metadata = extract_md_metadata(Path(markdown_file))
+    if template:
         try:
             match_metadata_to_template(template, metadata.keys())
         except ExpectedMoreMetaDataException as e:
             click.echo(f"!!!!! WARNING: {e}")
-        filled_template = fill_template(template, html_content, metadata)
-        write_template_to_pdf(template, filled_template, Path(output))
+    filled_template = (
+        fill_template(template, html_content, metadata) if template else html_content
+    )
+    write_template_to_pdf(template, filled_template, Path(output))
 
 
 @click.command()
