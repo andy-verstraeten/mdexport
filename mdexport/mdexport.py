@@ -8,12 +8,14 @@ from mdexport.cli import (
     validate_template,
     validate_output_md,
 )
-from mdexport.markdown import read_md_file, convert_md_to_html, extract_md_metadata
-from mdexport.templates import (
-    fill_template,
-    match_metadata_to_template,
-    ExpectedMoreMetaDataException,
+
+from mdexport.core import generate_renderable_html
+
+from mdexport.markdown import (
+    read_md_file,
+    generate_toc,
 )
+
 from mdexport.markdown import generate_empty_md
 from mdexport.exporter import write_template_to_pdf
 from mdexport.config import config, CONFIG_HELP
@@ -34,21 +36,20 @@ def cli():
     help=generate_template_help(),
     callback=validate_template,
 )
-def publish(markdown_file: str, output: str, template: str) -> None:
+@click.option("--table-of-content", "-toc", is_flag=True)
+def publish(
+    markdown_file: str, output: str, template: str, table_of_content: bool
+) -> None:
     """Publish Markdown files to PDF."""
     config.pre_publish_config_check()
     md_path = Path(markdown_file)
     md_content = read_md_file(md_path)
-    html_content = convert_md_to_html(md_content, md_path)
-    metadata = extract_md_metadata(Path(markdown_file))
-    if template:
-        try:
-            match_metadata_to_template(template, metadata.keys())
-        except ExpectedMoreMetaDataException as e:
-            click.echo(f"!!!!! WARNING: {e}")
-    filled_template = (
-        fill_template(template, html_content, metadata) if template else html_content
-    )
+    filled_template = generate_renderable_html(md_content, md_path, template)
+    if table_of_content:
+        toc_html = generate_toc(md_content, md_path, filled_template, template)
+        filled_template = generate_renderable_html(
+            md_content, md_path, template, toc_html
+        )
     write_template_to_pdf(template, filled_template, Path(output))
 
 

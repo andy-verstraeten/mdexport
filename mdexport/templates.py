@@ -16,6 +16,8 @@ class ExpectedMoreMetaDataException(Exception):
 
 
 BODY_VAR = "body"
+TOC_VAR = "toc"
+SPECIAL_VARS = [BODY_VAR, TOC_VAR]
 
 
 def get_available_templates() -> List[str]:
@@ -92,4 +94,6 @@ def extract_variables(template_string: str) -> Set[str]:
 
 def get_variables_from_template(template: str):
     template_html = read_template(template)
-    return list(filter(lambda var: var != "body", extract_variables(template_html)))
+    return list(
+        filter(lambda var: var not in SPECIAL_VARS, extract_variables(template_html))
+    )

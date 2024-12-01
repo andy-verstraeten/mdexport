@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 from mdexport.templates import get_variables_from_template
 from mdexport.config import get_attachment_dir
+from mdexport.exporter import write_render_html
 
 ATTACHMENT_DIRECTORY = get_attachment_dir()
 MARKDOWN_EXTRAS = ["tables", "toc", "fenced-code-blocks"]
@@ -45,9 +46,31 @@ def convert_md_to_html(md_content: str, md_path: Path) -> str:
     return html_text
 
 
-def generate_toc(md_content: str, md_path: Path):
+def generate_toc(
+    md_content: str, md_path: Path, renderable_content: str, template: str | None
+):
     toc_html = markdown2.markdown(md_content, extras=MARKDOWN_EXTRAS).toc_html
-    content_html = convert_md_to_html(md_content, md_path)
+    rendered_document = write_render_html(template, renderable_content)
+    heading_pages = {}
+    offset = None
+    for page_number, page in enumerate(rendered_document.pages, start=1):
+        for box in page._page_box.descendants():
+            # Check for headings (e.g., H1, H2, ...)
+            if box.element_tag in {"h1", "h2", "h3", "h4", "h5", "h6"}:
+                if not offset:
+                    offset = page_number - 1
+                element_id = box.element.get("id")
+                heading_pages[element_id] = page_number - offset
+
+    def replace_link(match):
+        href = match.group(1)  # The href value
+        text = match.group(2)  # The inner text of the <a> tag
+        # Extract the page number from the heading_pages using the href (without #)
+        page_number = heading_pages.get(href.lstrip("#"), "N/A")
+        return f'<a href="{href}">{text} p.{page_number}</a>'
+
+    updated_toc = re.sub(r'<a href="([^"]+)">([^<]+)</a>', replace_link, toc_html)
+    return updated_toc
 
 
 def md_relative_img_to_absolute(md_content: str, md_path: Path) -> str:
