@@ -7,6 +7,7 @@ from mdexport.cli import (
     generate_template_help,
     validate_template,
     validate_output_md,
+    validate_toc,
 )
 
 from mdexport.core import generate_renderable_html
@@ -36,9 +37,9 @@ def cli():
     help=generate_template_help(),
     callback=validate_template,
 )
-@click.option("--table-of-content", "-toc", is_flag=True)
+@click.option("--table-of-content", "-toc", type=int, callback=validate_toc)
 def publish(
-    markdown_file: str, output: str, template: str, table_of_content: bool
+    markdown_file: str, output: str, template: str, table_of_content: int
 ) -> None:
     """Publish Markdown files to PDF."""
     config.pre_publish_config_check()
@@ -47,7 +48,7 @@ def publish(
     filled_template = generate_renderable_html(md_content, md_path, template)
     if table_of_content:
         toc_html = generate_toc(
-            generate_renderable_html, md_content, md_path, 1, template
+            generate_renderable_html, md_content, md_path, table_of_content, template
         )
         filled_template = generate_renderable_html(
             md_content, md_path, template, toc_html

@@ -56,3 +56,12 @@ def validate_output_md(ctx: click.Context, param: click.Option, path: str) -> Pa
         raise click.BadParameter(
             "The provided output markdown file or path is invalid."
         )
+
+
+def validate_toc(ctx: click.Context, param: click.Option, toc: int) -> int:
+    if toc > 0 and toc < 7:
+        return toc
+    else:
+        raise click.BadParameter(
+            "Invalid table of content depth. Please provide a number between 1 and 6."
+        )
