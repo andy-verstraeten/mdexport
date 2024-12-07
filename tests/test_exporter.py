@@ -1,7 +1,6 @@
 import mdexport.exporter
 from mdexport.exporter import (
     insert_base_style,
-    write_html_to_pdf,
     write_template_to_pdf,
 )
 import mdexport.templates
@@ -35,27 +34,6 @@ body {}
     assert "".join(insert_base_style(MOCK_HTML).split()) == "".join(
         EXPECTED_HTML.split()
     )
-
-
-def test_write_html_to_pdf(monkeypatch: MonkeyPatch):
-    MOCK_HTML_CONTENT = "<html><h1>MOCK</h1></html>"
-    MOCK_OUTPUT_PATH = Path("/mock/path") / "output.pdf"
-
-    def fake_insert_base_style(html_content: str) -> str:
-        assert html_content == "<html><h1>MOCK</h1></html>"
-        return html_content
-
-    class Write_Pdf_Mock:
-        def write_pdf(self, output):
-            assert output == Path("/mock/path") / "output.pdf"
-
-    def HTML_Mock(string: str, base_url: str):
-        assert string == MOCK_HTML_CONTENT
-        return Write_Pdf_Mock()
-
-    monkeypatch.setattr(mdexport.exporter, "insert_base_style", fake_insert_base_style)
-    monkeypatch.setattr("weasyprint.HTML", HTML_Mock)
-    write_html_to_pdf(MOCK_HTML_CONTENT, MOCK_OUTPUT_PATH)
 
 
 def test_write_template_to_pdf(monkeypatch: MonkeyPatch, tmp_path: Path):

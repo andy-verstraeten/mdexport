@@ -16,6 +16,8 @@ class ExpectedMoreMetaDataException(Exception):
 
 
 BODY_VAR = "body"
+TOC_VAR = "toc"
+SPECIAL_VARS = [BODY_VAR, TOC_VAR]
 
 
 def get_available_templates() -> List[str]:
@@ -66,7 +68,7 @@ def match_metadata_to_template(template: str, metadata_keys: List[str]):
     template_html = read_template(template)
     template_variables = extract_variables(template_html)
     not_included_metadata = list(
-        set(template_variables) - set(metadata_keys) - {BODY_VAR}
+        set(template_variables) - set(metadata_keys) - set(SPECIAL_VARS)
     )
     if len(not_included_metadata) > 0:
         not_included_comma = ",".join(not_included_metadata)
@@ -92,4 +94,6 @@ def extract_variables(template_string: str) -> Set[str]:
 
 def get_variables_from_template(template: str):
     template_html = read_template(template)
-    return list(filter(lambda var: var != "body", extract_variables(template_html)))
+    return list(
+        filter(lambda var: var not in SPECIAL_VARS, extract_variables(template_html))
+    )

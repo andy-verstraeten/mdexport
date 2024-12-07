@@ -22,6 +22,32 @@ border: 1px solid black;
 td,th {
 padding: 5px;
 }
+
+.dont_render {
+display:none !important;
+
+}
+.mdexport-toc-container {
+    ul {
+    list-style: none;
+    padding-left: 1em;
+    }
+    a   {
+        color: black;
+        text-align: left;
+    }
+    .mdexport-toc-item {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    }
+}
+@page {
+    @bottom-right {
+        font-family: Arial, sans-serif;
+        content: counter(page);
+    }
+}
 </style>
 """
 
@@ -71,6 +97,35 @@ def write_html_to_pdf(html_content: str, output: Path) -> None:
     # base_url refers to the highest root directory. Required to render absolute path image paths
     weasyprint.HTML(string=html_content, base_url=Path.cwd().root).write_pdf(output)
 """
+
+
+def write_render_html(
+    template: str | None, filled_template: str
+) -> weasyprint.Document:
+    """
+    TODO: setup context manager to write the html
+    """
+    try:
+        filled_template = insert_base_style(filled_template)
+        render_file = f".{uuid4()}.html"
+        if not template:
+            template = ""
+            filled_template = insert_base_style(filled_template)
+        render_full_path = get_templates_directory() / template / render_file
+        render_full_path.write_text(filled_template)
+        rendered_document = weasyprint.HTML(render_full_path).render()
+        render_full_path.unlink()
+        return rendered_document
+    except TemplateDirNotSetException:
+        click.echo(
+            f"""ERROR: Template directory not set in mdexport config.
+Please run:
+{APP_NAME} settemplatedir /path/to/templates/
+Your template directory should hold only folders named with the template name.
+Inside the should be a Jinja2 template named "template.html"  
+            """
+        )
+        exit()
 
 
 def write_template_to_pdf(

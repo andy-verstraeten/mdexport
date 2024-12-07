@@ -4,6 +4,9 @@ from pathlib import Path
 import re
 from mdexport.templates import get_variables_from_template
 from mdexport.config import get_attachment_dir
+from mdexport.exporter import write_render_html
+from typing import Callable
+
 
 ATTACHMENT_DIRECTORY = get_attachment_dir()
 MARKDOWN_EXTRAS = ["tables", "toc", "fenced-code-blocks"]
@@ -45,9 +48,61 @@ def convert_md_to_html(md_content: str, md_path: Path) -> str:
     return html_text
 
 
-def generate_toc(md_content: str, md_path: Path):
+def generate_toc(
+    renderer: Callable, md_content: str, md_path: Path, depth: int, template: str | None
+):
     toc_html = markdown2.markdown(md_content, extras=MARKDOWN_EXTRAS).toc_html
-    content_html = convert_md_to_html(md_content, md_path)
+
+    test_render_toc = f"""<section class="mdexport-toc-container">
+        {toc_html}
+</section>
+"""
+    renderable_content = renderer(md_content, md_path, template, test_render_toc)
+    rendered_document = write_render_html(template, renderable_content)
+    heading_pages = {}
+    offset = None
+    for page_number, page in enumerate(rendered_document.pages, start=1):
+        for box in page._page_box.descendants():
+            # Check for headings (e.g., H1, H2, ...)
+            if box.element_tag in map(lambda x: f"h{x}", range(1, depth + 1)):
+                if not offset:
+                    offset = page_number - 1
+                element_id = box.element.get("id")
+                heading_pages[element_id] = page_number - offset
+
+    def replace_link(match):
+        href = match.group(1)  # The href value
+        text = match.group(2)  # The inner text of the <a> tag
+        # Extract the page number from the heading_pages using the href (without #)
+        page_number = heading_pages.get(href.lstrip("#"), None)
+        if not page_number:
+            return f'<a href="{href}" class="mdexport-toc-item dont_render"><span>{text}</span> <span>p.{page_number}</span></a>'
+        else:
+            return f'<a href="{href}" class="mdexport-toc-item"><span>{text}</span> <span>p.{page_number}</span></a>'
+
+    updated_toc = re.sub(r'<a href="([^"]+)">([^<]+)</a>', replace_link, str(toc_html))
+    combined_no_page_nr_style = generate_no_page_nr_css(offset) if offset else ""
+    return f"""
+    {combined_no_page_nr_style}
+    <section class="mdexport-toc-container">
+        {updated_toc}
+</section>"""
+
+
+def generate_no_page_nr_css(offset: int):
+    selectors = map(lambda x: f"@page:nth({x})", range(1, offset + 1))
+
+    style = """ {
+    counter-reset: page 0;
+    @bottom-right {
+        content: none; 
+    }
+}"""
+    return (
+        "<style>"
+        + "\n".join(map(lambda selector: selector + style, selectors))
+        + "</style>"
+    )
 
 
 def md_relative_img_to_absolute(md_content: str, md_path: Path) -> str:

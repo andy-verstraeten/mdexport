@@ -18,8 +18,10 @@ import mdexport
 def test_get_available_templates(monkeypatch: MonkeyPatch, tmp_path: Path):
     template1 = tmp_path / "template1"
     template1.mkdir()
+    (template1 / "template.html").touch()
     template2 = tmp_path / "template2"
     template2.mkdir()
+    (template2 / "template.html").touch()
     (tmp_path / "not_a_template.txt").touch()
     monkeypatch.setattr(mdexport.templates, "get_templates_directory", lambda: tmp_path)
     assert {*get_available_templates()} == {"template1", "template2"}
