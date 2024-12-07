@@ -39,7 +39,8 @@ padding: 5px;
 }
 @page {
     @bottom-right {
-        content: "Page " counter(page);
+        font-family: Arial, sans-serif;
+        content: counter(page);
     }
 }
 </style>

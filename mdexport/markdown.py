@@ -77,24 +77,30 @@ def generate_toc(
         return f'<a href="{href}" class="mdexport-toc-item"><span>{text}</span> <span>p.{page_number}</span></a>'
 
     updated_toc = re.sub(r'<a href="([^"]+)">([^<]+)</a>', replace_link, str(toc_html))
-    # selector = ", ".join(map(lambda x: f"@page:nth({x})", range(1, offset + 1)))
-    selector = "@page:nth(1)"
-    style = (
-        selector
-        + """ {
-    @bottom-right {
-        content: none; !important
-    }
-}"""
-    )
-
+    combined_no_page_nr_style = generate_no_page_nr_css(offset) if offset else ""
     return f"""
-    <style>
-    {style}
-    </style>
+
+    {combined_no_page_nr_style}
+  
     <section class="mdexport-toc-container">
         {updated_toc}
 </section>"""
+
+
+def generate_no_page_nr_css(offset: int):
+    selectors = map(lambda x: f"@page:nth({x})", range(1, offset + 1))
+
+    style = """ {
+    counter-reset: page 0;
+    @bottom-right {
+        content: none; 
+    }
+}"""
+    return (
+        "<style>"
+        + "\n".join(map(lambda selector: selector + style, selectors))
+        + "</style>"
+    )
 
 
 def md_relative_img_to_absolute(md_content: str, md_path: Path) -> str:
