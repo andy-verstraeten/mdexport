@@ -37,7 +37,14 @@ def cli():
     help=generate_template_help(),
     callback=validate_template,
 )
-@click.option("--table-of-content", "-toc", type=int, callback=validate_toc)
+@click.option(
+    "--table-of-content",
+    "-toc",
+    type=int,
+    callback=validate_toc,
+    help="Provide a depth between 1 and 6 depending on the depth of subtitles you want to include in the table of content.",
+    default=2,
+)
 def publish(
     markdown_file: str, output: str, template: str, table_of_content: int
 ) -> None:
@@ -45,14 +52,10 @@ def publish(
     config.pre_publish_config_check()
     md_path = Path(markdown_file)
     md_content = read_md_file(md_path)
-    filled_template = generate_renderable_html(md_content, md_path, template)
-    if table_of_content:
-        toc_html = generate_toc(
-            generate_renderable_html, md_content, md_path, table_of_content, template
-        )
-        filled_template = generate_renderable_html(
-            md_content, md_path, template, toc_html
-        )
+    toc_html = generate_toc(
+        generate_renderable_html, md_content, md_path, table_of_content, template
+    )
+    filled_template = generate_renderable_html(md_content, md_path, template, toc_html)
     write_template_to_pdf(template, filled_template, Path(output))
 
 
