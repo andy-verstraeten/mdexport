@@ -49,9 +49,10 @@ def convert_md_to_html(md_content: str, md_path: Path) -> str:
 
 
 def generate_toc(
-    renderer: Callable, md_content: str, md_path: Path, template: str | None
+    renderer: Callable, md_content: str, md_path: Path, depth: int, template: str | None
 ):
     toc_html = markdown2.markdown(md_content, extras=MARKDOWN_EXTRAS).toc_html
+
     test_render_toc = f"""<section class="mdexport-toc-container">
         {toc_html}
 </section>
@@ -63,7 +64,7 @@ def generate_toc(
     for page_number, page in enumerate(rendered_document.pages, start=1):
         for box in page._page_box.descendants():
             # Check for headings (e.g., H1, H2, ...)
-            if box.element_tag in {"h1", "h2", "h3", "h4", "h5", "h6"}:
+            if box.element_tag in map(lambda x: f"h{x}", range(1, depth + 1)):
                 if not offset:
                     offset = page_number - 1
                 element_id = box.element.get("id")
@@ -73,15 +74,16 @@ def generate_toc(
         href = match.group(1)  # The href value
         text = match.group(2)  # The inner text of the <a> tag
         # Extract the page number from the heading_pages using the href (without #)
-        page_number = heading_pages.get(href.lstrip("#"), "N/A")
-        return f'<a href="{href}" class="mdexport-toc-item"><span>{text}</span> <span>p.{page_number}</span></a>'
+        page_number = heading_pages.get(href.lstrip("#"), None)
+        if not page_number:
+            return f'<a href="{href}" class="mdexport-toc-item dont_render"><span>{text}</span> <span>p.{page_number}</span></a>'
+        else:
+            return f'<a href="{href}" class="mdexport-toc-item"><span>{text}</span> <span>p.{page_number}</span></a>'
 
     updated_toc = re.sub(r'<a href="([^"]+)">([^<]+)</a>', replace_link, str(toc_html))
     combined_no_page_nr_style = generate_no_page_nr_css(offset) if offset else ""
     return f"""
-
     {combined_no_page_nr_style}
-  
     <section class="mdexport-toc-container">
         {updated_toc}
 </section>"""

@@ -22,6 +22,11 @@ border: 1px solid black;
 td,th {
 padding: 5px;
 }
+
+.dont_render {
+display:none !important;
+
+}
 .mdexport-toc-container {
     ul {
     list-style: none;
