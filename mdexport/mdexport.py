@@ -46,7 +46,7 @@ def publish(
     md_content = read_md_file(md_path)
     filled_template = generate_renderable_html(md_content, md_path, template)
     if table_of_content:
-        toc_html = generate_toc(md_content, md_path, filled_template, template)
+        toc_html = generate_toc(generate_renderable_html, md_content, md_path, template)
         filled_template = generate_renderable_html(
             md_content, md_path, template, toc_html
         )

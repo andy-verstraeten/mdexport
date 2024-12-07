@@ -68,7 +68,7 @@ def match_metadata_to_template(template: str, metadata_keys: List[str]):
     template_html = read_template(template)
     template_variables = extract_variables(template_html)
     not_included_metadata = list(
-        set(template_variables) - set(metadata_keys) - {BODY_VAR}
+        set(template_variables) - set(metadata_keys) - set(SPECIAL_VARS)
     )
     if len(not_included_metadata) > 0:
         not_included_comma = ",".join(not_included_metadata)

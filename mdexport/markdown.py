@@ -5,6 +5,8 @@ import re
 from mdexport.templates import get_variables_from_template
 from mdexport.config import get_attachment_dir
 from mdexport.exporter import write_render_html
+from typing import Callable
+
 
 ATTACHMENT_DIRECTORY = get_attachment_dir()
 MARKDOWN_EXTRAS = ["tables", "toc", "fenced-code-blocks"]
@@ -47,9 +49,14 @@ def convert_md_to_html(md_content: str, md_path: Path) -> str:
 
 
 def generate_toc(
-    md_content: str, md_path: Path, renderable_content: str, template: str | None
+    renderer: Callable, md_content: str, md_path: Path, template: str | None
 ):
     toc_html = markdown2.markdown(md_content, extras=MARKDOWN_EXTRAS).toc_html
+    test_render_toc = f"""<section class="mdexport-toc-container">
+        {toc_html}
+</section>
+"""
+    renderable_content = renderer(md_content, md_path, template, test_render_toc)
     rendered_document = write_render_html(template, renderable_content)
     heading_pages = {}
     offset = None
@@ -67,10 +74,27 @@ def generate_toc(
         text = match.group(2)  # The inner text of the <a> tag
         # Extract the page number from the heading_pages using the href (without #)
         page_number = heading_pages.get(href.lstrip("#"), "N/A")
-        return f'<a href="{href}">{text} p.{page_number}</a>'
+        return f'<a href="{href}" class="mdexport-toc-item"><span>{text}</span> <span>p.{page_number}</span></a>'
 
-    updated_toc = re.sub(r'<a href="([^"]+)">([^<]+)</a>', replace_link, toc_html)
-    return updated_toc
+    updated_toc = re.sub(r'<a href="([^"]+)">([^<]+)</a>', replace_link, str(toc_html))
+    # selector = ", ".join(map(lambda x: f"@page:nth({x})", range(1, offset + 1)))
+    selector = "@page:nth(1)"
+    style = (
+        selector
+        + """ {
+    @bottom-right {
+        content: none; !important
+    }
+}"""
+    )
+
+    return f"""
+    <style>
+    {style}
+    </style>
+    <section class="mdexport-toc-container">
+        {updated_toc}
+</section>"""
 
 
 def md_relative_img_to_absolute(md_content: str, md_path: Path) -> str:

@@ -22,6 +22,26 @@ border: 1px solid black;
 td,th {
 padding: 5px;
 }
+.mdexport-toc-container {
+    ul {
+    list-style: none;
+    padding-left: 1em;
+    }
+    a   {
+        color: black;
+        text-align: left;
+    }
+    .mdexport-toc-item {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    }
+}
+@page {
+    @bottom-right {
+        content: "Page " counter(page);
+    }
+}
 </style>
 """
 
