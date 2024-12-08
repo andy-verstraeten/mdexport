@@ -53,9 +53,6 @@ def filter_depth(toc_html: str, depth: int) -> str:
     soup = BeautifulSoup(toc_html, "html.parser")
 
     def prune_ul(tag, current_depth):
-        # Print the current depth (optional)
-        print("Tag:", tag.name, "Depth:", current_depth)
-
         # If the current tag is a <ul> and exceeds the specified depth, remove it
         if tag.name == "ul" and current_depth > depth:
             tag.decompose()  # Remove the deeply nested <ul>
